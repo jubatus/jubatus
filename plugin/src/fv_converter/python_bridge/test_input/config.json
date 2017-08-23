@@ -1,0 +1,65 @@
+{
+  "converter": {
+    "string_types": {
+      "stem_sentence": {
+        "method": "dynamic",
+        "path": "libpython_bridge.so",
+        "function": "string_feature",
+        "module": "sentence_stemmer",
+        "class": "SentenceStemmer"
+      },
+      "split_by_space": {
+        "method": "dynamic",
+        "path": "libpython_bridge.so",
+        "function": "word_splitter",
+        "module": "space_splitter",
+        "class": "SpaceSplitter"
+      }
+    },
+    "string_rules": [
+      {
+        "key": "*",
+        "type": "stem_sentence",
+        "sample_weight": "tf",
+        "global_weight": "bin"
+      },
+      {
+        "key": "*",
+        "type": "split_by_space",
+        "sample_weight": "tf",
+        "global_weight": "bin"
+      }
+    ],
+    "num_types": {
+      "multiply_by_3": {
+        "method": "dynamic",
+        "path": "libpython_bridge.so",
+        "function": "num_feature",
+        "module": "number_multiplier",
+        "class": "NumberMultiplier",
+        "n": "3"
+      }
+    },
+    "num_rules": [
+      {
+        "key": "*",
+        "type": "multiply_by_3"
+      }
+    ],
+    "binary_types": {
+      "extract_length": {
+        "method": "dynamic",
+        "path": "libpython_bridge.so",
+        "function": "binary_feature",
+        "module": "binary_length",
+        "class": "BinaryLengthExtractor"
+      }
+    },
+    "binary_rules": [
+      {
+        "key": "*",
+        "type": "extract_length"
+      }
+    ]
+  }
+}

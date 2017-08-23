@@ -1,0 +1,80 @@
+# -*- python -*-
+
+from waflib import Options
+
+def options(opt):
+  opt.add_option('--enable-python-bridge',
+                action='store_true',
+                default=False,
+                help='build python bridge plugin')
+  opt.add_option('--enable-python3-bridge',
+                action='store_true',
+                default=False,
+                help='build python bridge plugin (force using Python 3.x)')
+
+def configure(conf):
+  if Options.options.enable_python_bridge or Options.options.enable_python3_bridge:
+    conf.check_cxx(lib='dl', define_name='HAVE_DL', errmsg = 'not found', mandatory = False)
+
+    python_found = False
+    if not Options.options.enable_python3_bridge:
+      python_found = conf.check_cfg(package = 'python',
+                   atleast_version = '2.6',
+                   args = '--cflags --libs',
+                   uselib_store = 'PYTHON',
+                   define_name = 'HAVE_PYTHON',
+                   mandatory = False)
+    if not python_found:
+      conf.check_cfg(package = 'python3',
+                   args = '--cflags --libs',
+                   uselib_store = 'PYTHON',
+                   define_name = 'HAVE_PYTHON')
+
+def make_test(bld, use, src):
+  bld.program(
+    features = 'gtest',
+    source = src,
+    target = src[0:src.rindex('.')],
+    use = use,
+    )
+
+def build(bld):
+  if 'HAVE_PYTHON' in bld.env.define_key:
+    n = bld.path.get_bld().make_node('test_input')
+    n.mkdir()
+    bld(rule = 'cp ${SRC} ${TGT}',
+        source = bld.path.ant_glob('test_input/*'),
+        target = n)
+
+    source = [
+      'python_bridge.cpp',
+      'pb_word_splitter.cpp',
+      'pb_string_feature.cpp',
+      'pb_num_feature.cpp',
+      'pb_binary_feature.cpp',
+    ]
+    test_source = [
+      'python_bridge_test.cpp',
+      'pb_word_splitter_test.cpp',
+      'pb_string_feature_test.cpp',
+      'pb_num_feature_test.cpp',
+      'pb_binary_feature_test.cpp',
+    ]
+
+    bld.shlib(
+      source = source,
+      target = 'python_bridge',
+      install_path = bld.env['JUBATUS_PLUGIN_DIR'],
+      use='JUBATUS_CORE PYTHON DL',
+      vnum = bld.env['ABI_VERSION'],
+    )
+    for t in test_source:
+      make_test(bld, 'python_bridge', t)
+
+    bld.install_files('${JUBATUS_PLUGIN_DIR}/python', bld.path.ant_glob('python/*.py'))
+
+    # To run test for example Python modules:
+    # $ cd python && python -m unittest discover -p "*.py"
+
+    # To run integration test using jubaconv:
+    # $ cd test_input && ./test.sh

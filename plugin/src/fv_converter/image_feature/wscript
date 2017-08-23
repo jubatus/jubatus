@@ -1,0 +1,60 @@
+# -*- python -*-
+
+from waflib import Options
+
+def options(opt):
+  opt.add_option('--enable-opencv',
+                action='store_true',
+                default=False,
+                help='build image feature plugin')
+
+def configure(conf):
+  if Options.options.enable_opencv:
+    conf.check_cfg(package = 'opencv',
+                   args = '--cflags --libs',
+                   atleast_version = '2.3.0',
+                   define_name = 'HAVE_OPENCV',
+                   mandatory = False)
+    if conf.env.HAVE_OPENCV:
+      conf.define('OPENCV_HEADER', 'opencv2/opencv.hpp')
+      conf.define('OPENCV_WITH_ORB', 1)
+    else:
+      conf.check_cfg(package = 'opencv',
+                     args = '--cflags --libs',
+                     atleast_version = '2.2.0',
+                     define_name = 'HAVE_OPENCV',
+                     mandatory = False)
+      if conf.env.HAVE_OPENCV:
+        conf.define('OPENCV_HEADER', 'opencv2/opencv.hpp')
+      else:
+        conf.check_cfg(package = 'opencv',
+                       args = '--cflags --libs',
+                       atleast_version = '2.0.0',
+                       define_name = 'HAVE_OPENCV',
+                       errmsg = 'opencv 2.0.0 or later is required (remove "--enable-opencv" option if not necessary)')
+        conf.define('OPENCV_HEADER', 'image_feature_opencv.hpp')
+
+def make_test(bld, use, src):
+  bld.program(
+    features = 'gtest',
+    source = src,
+    target = src[0:src.rindex('.')],
+    use = use,
+    )
+
+def build(bld):
+  if 'HAVE_OPENCV' in bld.env.define_key:
+    n = bld.path.get_bld().make_node('test_input')
+    n.mkdir()
+    bld(rule = 'cp ${SRC} ${TGT}',
+        source = bld.path.ant_glob('test_input/*'),
+        target = n)
+
+    bld.shlib(
+      source = 'image_feature.cpp',
+      target = 'image_feature',
+      install_path = bld.env['JUBATUS_PLUGIN_DIR'],
+      use='OPENCV JUBATUS_CORE server_headers',
+      vnum = bld.env['ABI_VERSION']
+      )
+    make_test(bld, 'image_feature', 'image_feature_test.cpp')

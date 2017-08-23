@@ -1,0 +1,11 @@
+{
+  "string_values": {
+    "t": "JUBATUS and jubatus must be same feature"
+  },
+  "num_values": {
+    "x": 10
+  },
+  "binary_values": {
+    "data": "0123456789"
+  }
+}

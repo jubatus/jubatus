@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2016 Preferred Networks and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2017 Preferred Networks and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,59 +14,57 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
-#define JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
+#ifndef JUBATUS_PLUGIN_FV_CONVERTER_PYTHON_BRIDGE_PB_BINARY_FEATURE_HPP_
+#define JUBATUS_PLUGIN_FV_CONVERTER_PYTHON_BRIDGE_PB_BINARY_FEATURE_HPP_
 
-#include <map>
-#include <string>
+#include <Python.h>
+
 #include <utility>
+#include <string>
 #include <vector>
-#include <iostream>
-
-#include OPENCV_HEADER
 
 #include "jubatus/core/fv_converter/binary_feature.hpp"
-#include "jubatus/core/fv_converter/exception.hpp"
+
+#include "python_bridge.hpp"
 
 namespace jubatus {
 namespace plugin {
 namespace fv_converter {
+namespace python {
 
-using core::fv_converter::converter_exception;
+/**
+ * Python bridge for `binary_feature` interface.
+ *
+ * Required interface for Python class:
+ *
+ *   * Instance method named `extract` with arity == 2.
+ *   * Arguments are key [str] and value [bytes].
+ *   * Must return a list of 2 element tuples, where the first element
+ *     is a feature key [str] and the second element is a feature value
+ *     [number].
+ */
+class pb_binary_feature
+    : public jubatus::core::fv_converter::binary_feature {
+ public:
+  explicit pb_binary_feature(PyObject* ins)
+      : name_("extract"),
+        ins_(ins),
+        method_(pb_unicode_from_string(name_)) {}
 
-class image_feature:public jubatus::core::fv_converter::binary_feature {
-  public:
-    virtual ~image_feature() {}
-    image_feature(
-      const std::string& algorithm = "RGB",
-      const bool resize = false,
-      const float x_size = 64.0,
-      const float y_size = 64.0);
-    void add_feature(
+  void add_feature(
       const std::string& key,
       const std::string& value,
       std::vector<std::pair<std::string, float> >& ret_fv) const;
-    void dense_sampler(
-      const cv::Mat mat,
-      const int step,
-      std::vector<cv::KeyPoint>& keypoint) const;
 
-  private:
-    std::string algorithm_;
-    bool resize_;
-    float x_size_;
-    float y_size_;
-  };
+ private:
+  std::string name_;
+  pb_object ins_;
+  pb_object method_;
+};
 
+}  // namespace python
 }  // namespace fv_converter
 }  // namespace plugin
 }  // namespace jubatus
 
-
-extern "C" {
-jubatus::plugin::fv_converter::image_feature* create(
-  const std::map<std::string, std::string>& params);
-std::string version();
-}  // extern "C"
-
-#endif  // JUBATUS_PLUGIN_FV_CONVERTER_IMAGE_FEATURE_HPP_
+#endif  // JUBATUS_PLUGIN_FV_CONVERTER_PYTHON_BRIDGE_PB_BINARY_FEATURE_HPP_

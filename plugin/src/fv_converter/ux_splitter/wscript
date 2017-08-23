@@ -1,0 +1,41 @@
+# -*- python -*-
+
+from waflib import Options
+
+def options(opt):
+  opt.add_option('--enable-ux',
+                 action='store_true',
+                 default=False,
+                 help='build ux feature plugin')
+
+def configure(conf):
+  if Options.options.enable_ux:
+    conf.check_cfg(package = 'ux',
+                   args = '--cflags --libs',
+                   define_name = 'HAVE_UX',
+                   errmsg = 'not found (remove "--enable-ux" option if not necessary)')
+
+def make_test(bld, use, src):
+  bld.program(
+    features = 'gtest',
+    source = src,
+    target = src[0:src.rindex('.')],
+    use = use,
+    )
+
+def build(bld):
+  if 'HAVE_UX' in bld.env.define_key:
+    n = bld.path.get_bld().make_node('test_input')
+    n.mkdir()
+    bld(rule = 'cp ${SRC} ${TGT}',
+        source = bld.path.ant_glob('test_input/*'),
+        target = n)
+
+    bld.shlib(
+      source = 'ux_splitter.cpp',
+      target = 'ux_splitter',
+      install_path = bld.env['JUBATUS_PLUGIN_DIR'],
+      use = 'UX JUBATUS_CORE jubaserv_common_logger server_headers',
+      vnum = bld.env['ABI_VERSION'],
+      )
+    make_test(bld, 'ux_splitter', 'ux_splitter_test.cpp')
