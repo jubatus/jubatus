@@ -19,8 +19,8 @@ Then build packages:
 
 ::
 
-  docker run --rm -v $PWD:/pkg jubatus-rpmbuild-centos6 sh -c "cd pkg && chown root: -R rpmbuild && ./package.sh -cai"
-  docker run --rm -v $PWD:/pkg jubatus-rpmbuild-centos7 sh -c "cd pkg && chown root: -R rpmbuild && ./package.sh -cai"
+  docker run --rm -it -v $PWD:/pkg jubatus-rpmbuild-centos6 sh -c "cd pkg && chown root: -R rpmbuild && ./package.sh -cai"
+  docker run --rm -it -v $PWD:/pkg jubatus-rpmbuild-centos7 sh -c "cd pkg && chown root: -R rpmbuild && ./package.sh -cai"
 
 Do not run these commands simultaneously!
 These two ``docker run`` commands share the current directory.

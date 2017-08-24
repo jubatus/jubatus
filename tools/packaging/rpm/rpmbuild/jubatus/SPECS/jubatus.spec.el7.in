@@ -28,9 +28,10 @@ BuildRequires:	zookeeper-client-devel = @ZOOKEEPER_VERSION@
 BuildRequires:	oniguruma-devel >= 5.9
 BuildRequires:	ux-devel = @UX_VERSION@
 BuildRequires:	mecab-devel = @MECAB_VERSION@
-BuildRequires:	opencv-devel >= 2.3
+BuildRequires:	opencv-devel >= 2.0
+BuildRequires:	python-devel >= 2.6
 BuildRequires:	pkgconfig
-BuildRequires:	python >= 2.4
+BuildRequires:	python >= 2.6
 
 Requires:		jubatus-core = @JUBATUS_CORE_VERSION@
 Requires:		jubatus-mpio = @JUBATUS_MPIO_VERSION@
@@ -57,7 +58,13 @@ Requires:	mecab-ipadic = @MECAB_IPADIC_VERSION@
 Summary:	Image feature extraction plug-in
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	opencv >= 2.3
+Requires:	opencv >= 2.0
+
+%package plugin-python
+Summary:	Python bridge plug-in
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	python-libs >= 2.6
 
 %package client
 Summary:	Jubatus C++ Client
@@ -89,6 +96,10 @@ This package provides MeCab feature extraction (morphological analysis for Japan
 Jubatus is a distributed processing framework and streaming machine learning library.
 This package provides OpenCV image feature extraction plug-in.
 
+%description plugin-python
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides Python bridge plug-in.
+
 %description client
 Jubatus is a distributed processing framework and streaming machine learning library.
 This package provides Jubatus C++ client headers.
@@ -101,7 +112,7 @@ This package provides headers and libraries needed to develop new engines or plu
 %setup -q -n %{name}
 
 %build
-%{__waf} configure --prefix=%{_prefix} --enable-zookeeper --enable-ux --enable-mecab --enable-opencv
+%{__waf} configure --prefix=%{_prefix} --enable-zookeeper --enable-ux --enable-mecab --enable-opencv --enable-python-bridge
 %{__waf} build
 
 %install
@@ -136,6 +147,10 @@ This package provides headers and libraries needed to develop new engines or plu
 
 %files plugin-image
 %{_libdir}/jubatus/plugin/libimage_feature.so*
+
+%files plugin-python
+%{_libdir}/jubatus/plugin/libpython_bridge.so*
+%{_libdir}/jubatus/plugin/python
 
 %files client
 %{_libdir}/pkgconfig/jubatus-client.pc
