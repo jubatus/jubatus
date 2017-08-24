@@ -52,7 +52,7 @@ void initialize() {
            "failed to get Python shared library path");
   // Intentionally leak the handle returned by dlopen as this runs only once.
   PB_CHECK(::dlopen(info.dli_fname, RTLD_LAZY | RTLD_GLOBAL) != NULL,
-           "failed to dlopen Python shared library; " << info.dli_fname);
+           "failed to dlopen Python shared library: " << info.dli_fname);
 
   // Initialize the Python interpreter and thread support.
   Py_Initialize();
