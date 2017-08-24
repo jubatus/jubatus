@@ -16,7 +16,7 @@ class SpaceSplitter(object):
         """
         Splits the input text with space.
 
-        The input text is typed as ``bytes``.
+        The input text is typed as ``str``.
         This method should return list of boundaries (pair of beginning
         position and length), e.g., ``[ (0, 1), (3, 4) ]``.
         """
