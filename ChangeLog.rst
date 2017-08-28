@@ -1,3 +1,18 @@
+Release 1.0.5 - 2017/08/28
+--------------------------
+
+* Improvements
+    * bandit: add ``epsilon-decreasing`` method (#354, #381)
+    * Improve compatibility with gcc-6.x (#368, #369)
+    * Improve compatibility with FreeBSD (#376, #384)
+    * Improve compatibility with environment missing ld.gold (#371)
+    * Implement equality comparator for json objects (#380)
+    * Improve string to number conversion (#377)
+
+* Bug fixes
+    * nearest_neighbor: fix crash when search neighbors for empty model (#382, #383)
+    * Fix FMV not working (#378, #379)
+
 Release 1.0.4 - 2017/06/26
 --------------------------
 

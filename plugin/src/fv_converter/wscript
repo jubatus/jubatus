@@ -1,110 +1,17 @@
 # -*- python -*-
-from waflib import Options
+subdirs = [
+    'mecab_splitter',
+    'ux_splitter',
+    'image_feature',
+    'python_bridge',
+]
+
 
 def options(opt):
-  opt.add_option('--enable-mecab',
-                 action='store_true',
-                 default=False,
-                 help='build mecab feature plugin')
-
-  opt.add_option('--enable-ux',
-                 action='store_true',
-                 default=False,
-                 help='build ux feature plugin')
-
-  opt.add_option('--enable-opencv',
-                action='store_true',
-                default=False,
-                help='build image feature plugin')
+    opt.recurse(subdirs)
 
 def configure(conf):
-  if Options.options.enable_mecab:
-    conf.check_cxx(header_name = 'mecab.h')
-    conf.check_cxx(lib = 'mecab',
-                   fragment='''
-#include <mecab.h>
-int main() {
-  MeCab::Model* (*p)(const char*) = MeCab::createModel;
-  &MeCab::Model::createTagger;
-  &MeCab::Model::createLattice;
-}
-''',
-                   define_name = 'HAVE_MECAB',
-                   errmsg = 'mecab 0.99 or later is required (remove "--enable-mecab" option if not necessary)')
-
-  if Options.options.enable_ux:
-    conf.check_cfg(package = 'ux',
-                   args = '--cflags --libs',
-                   define_name = 'HAVE_UX',
-                   errmsg = 'not found (remove "--enable-ux" option if not necessary)')
-
-  if Options.options.enable_opencv:
-    conf.check_cfg(package = 'opencv',
-                   args = '--cflags --libs',
-                   atleast_version = '2.3.0',
-                   define_name = 'HAVE_OPENCV',
-                   mandatory = False)
-    if conf.env.HAVE_OPENCV:
-      conf.define('OPENCV_HEADER', 'opencv2/opencv.hpp')
-      conf.define('OPENCV_WITH_ORB', 1)
-    else:
-      conf.check_cfg(package = 'opencv',
-                     args = '--cflags --libs',
-                     atleast_version = '2.2.0',
-                     define_name = 'HAVE_OPENCV',
-                     mandatory = False)
-      if conf.env.HAVE_OPENCV:
-        conf.define('OPENCV_HEADER', 'opencv2/opencv.hpp')
-      else:
-        conf.check_cfg(package = 'opencv',
-                       args = '--cflags --libs',
-                       atleast_version = '2.0.0',
-                       define_name = 'HAVE_OPENCV',
-                       errmsg = 'opencv 2.0.0 or later is required (remove "--enable-opencv" option if not necessary)')
-        conf.define('OPENCV_HEADER', 'image_feature_opencv.hpp')
-
-def make_test(bld, use, src):
-  bld.program(
-    features = 'gtest',
-    source = src,
-    target = src[0:src.rindex('.')],
-    use = use,
-    )
+    conf.recurse(subdirs)
 
 def build(bld):
-
-  n = bld.path.get_bld().make_node('test_input')
-  n.mkdir()
-  bld(rule = 'cp ${SRC} ${TGT}',
-      source = bld.path.ant_glob('test_input/*'),
-      target = n)
-
-  if 'HAVE_MECAB' in bld.env.define_key:
-    bld.shlib(
-      source = 'mecab_splitter.cpp',
-      target = 'mecab_splitter',
-      install_path = bld.env['JUBATUS_PLUGIN_DIR'],
-      use = 'MECAB JUBATUS_CORE server_headers',
-      vnum = bld.env['ABI_VERSION'],
-      )
-    make_test(bld, 'JUBATUS_CORE mecab_splitter', 'mecab_splitter_test.cpp')
-
-  if 'HAVE_UX' in bld.env.define_key:
-    bld.shlib(
-      source = 'ux_splitter.cpp',
-      target = 'ux_splitter',
-      install_path = bld.env['JUBATUS_PLUGIN_DIR'],
-      use = 'UX JUBATUS_CORE jubaserv_common_logger server_headers',
-      vnum = bld.env['ABI_VERSION'],
-      )
-    make_test(bld, 'ux_splitter', 'ux_splitter_test.cpp')
-
-  if 'HAVE_OPENCV' in bld.env.define_key:
-    bld.shlib(
-      source = 'image_feature.cpp',
-      target = 'image_feature',
-      install_path = bld.env['JUBATUS_PLUGIN_DIR'],
-      use='OPENCV JUBATUS_CORE server_headers',
-      vnum = bld.env['ABI_VERSION']
-      )
-    make_test(bld, 'image_feature', 'image_feature_test.cpp')
+    bld.recurse(subdirs)

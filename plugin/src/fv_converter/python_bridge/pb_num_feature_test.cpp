@@ -1,5 +1,5 @@
 // Jubatus: Online machine learning framework for distributed environment
-// Copyright (C) 2011 Preferred Networks and Nippon Telegraph and Telephone Corporation.
+// Copyright (C) 2017 Preferred Networks and Nippon Telegraph and Telephone Corporation.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -14,39 +14,45 @@
 // License along with this library; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-#ifndef JUBATUS_PLUGIN_FV_CONVERTER_UX_SPLITTER_HPP_
-#define JUBATUS_PLUGIN_FV_CONVERTER_UX_SPLITTER_HPP_
-
 #include <map>
-#include <string>
-#include <utility>
 #include <vector>
-#include <ux/ux.hpp>
-#include "jubatus/core/fv_converter/word_splitter.hpp"
+#include <utility>
+#include <string>
+#include <gtest/gtest.h>
+
+#include "jubatus/core/fv_converter/exception.hpp"
+
+#include "python_bridge.hpp"
+#include "pb_num_feature.hpp"
 
 namespace jubatus {
 namespace plugin {
 namespace fv_converter {
+namespace python {
 
-class ux_splitter : public jubatus::core::fv_converter::word_splitter {
- public:
-  explicit ux_splitter(const std::vector<std::string>& keywords);
-  ~ux_splitter();
-  void split(const std::string& string,
-             std::vector<std::pair<size_t, size_t> >& ret_boundaries) const;
+using std::map;
+using std::vector;
+using std::pair;
+using std::string;
 
- private:
-  ux::Trie trie_;
-};
+TEST(pb_num_feature, trivial) {
+  // Test fixture setup.
+  initialize();
+  add_path(".");
 
+  map<string, string> params;
+  params["module"] = "test_input.test_module";
+  params["class"] = "NumFeature";
+  pb_num_feature pb(setup(params));
+
+  vector<pair<string, float> > ret_fv;
+  pb.add_feature("key", 1.0, ret_fv);
+  ASSERT_EQ(1, ret_fv.size());
+  EXPECT_EQ("result", ret_fv[0].first);
+  EXPECT_EQ(1.0, ret_fv[0].second);
+}
+
+}  // namespace python
 }  // namespace fv_converter
 }  // namespace plugin
 }  // namespace jubatus
-
-extern "C" {
-jubatus::plugin::fv_converter::ux_splitter* create(
-    const std::map<std::string, std::string>& params);
-std::string version();
-}
-
-#endif  // JUBATUS_PLUGIN_FV_CONVERTER_UX_SPLITTER_HPP_

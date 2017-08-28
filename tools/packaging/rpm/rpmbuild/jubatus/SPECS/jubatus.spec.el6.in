@@ -1,8 +1,7 @@
 ###
 ### jubatus.spec.el6.in is a SPEC file for RHEL 6.  It is equivalent to
-### jubatus.spec.el7.in (RHEL 7) except that OpenCV support is excluded
-### as OpenCV shipped with RHEL 6 is too old and our plugin doesn't
-### support it.
+### jubatus.spec.el7.in (RHEL 7) except that Python support is excluded
+### as Python shipped with RHEL 6 does not provide `python.pc`.
 ###
 
 %define package_version @JUBATUS_VERSION@
@@ -30,8 +29,9 @@ BuildRequires:	zookeeper-client-devel = @ZOOKEEPER_VERSION@
 BuildRequires:	oniguruma-devel >= 5.9
 BuildRequires:	ux-devel = @UX_VERSION@
 BuildRequires:	mecab-devel = @MECAB_VERSION@
+BuildRequires:	opencv-devel >= 2.0
 BuildRequires:	pkgconfig
-BuildRequires:	python >= 2.4
+BuildRequires:	python >= 2.6
 
 Requires:		jubatus-core = @JUBATUS_CORE_VERSION@
 Requires:		jubatus-mpio = @JUBATUS_MPIO_VERSION@
@@ -53,6 +53,12 @@ Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	mecab = @MECAB_VERSION@
 Requires:	mecab-ipadic = @MECAB_IPADIC_VERSION@
+
+%package plugin-image
+Summary:	Image feature extraction plug-in
+Group:		Development/Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	opencv >= 2.0
 
 %package client
 Summary:	Jubatus C++ Client
@@ -80,6 +86,10 @@ This package provides UX-trie feature extraction plug-in.
 Jubatus is a distributed processing framework and streaming machine learning library.
 This package provides MeCab feature extraction (morphological analysis for Japanese text) plug-in.
 
+%description plugin-image
+Jubatus is a distributed processing framework and streaming machine learning library.
+This package provides OpenCV image feature extraction plug-in.
+
 %description client
 Jubatus is a distributed processing framework and streaming machine learning library.
 This package provides Jubatus C++ client headers.
@@ -92,7 +102,7 @@ This package provides headers and libraries needed to develop new engines or plu
 %setup -q -n %{name}
 
 %build
-%{__waf} configure --prefix=%{_prefix} --enable-zookeeper --enable-ux --enable-mecab
+%{__waf} configure --prefix=%{_prefix} --enable-zookeeper --enable-ux --enable-mecab --enable-opencv
 %{__waf} build
 
 %install
@@ -124,6 +134,9 @@ This package provides headers and libraries needed to develop new engines or plu
 
 %files plugin-mecab
 %{_libdir}/jubatus/plugin/libmecab_splitter.so*
+
+%files plugin-image
+%{_libdir}/jubatus/plugin/libimage_feature.so*
 
 %files client
 %{_libdir}/pkgconfig/jubatus-client.pc
