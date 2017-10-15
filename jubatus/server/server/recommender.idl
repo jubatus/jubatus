@@ -39,8 +39,20 @@ service recommender {
   #@cht #@analysis #@pass
   list<id_with_score> similar_row_from_id(0: string id, 1: uint size)
 
+  #@cht #@analysis #@pass
+  list<id_with_score> similar_row_from_id_and_score(0: string id, 1: float score)
+
+  #@cht #@analysis #@pass
+  list<id_with_score> similar_row_from_id_and_rate(0: string id, 1: float rate)
+
   #@random #@analysis #@pass
   list<id_with_score> similar_row_from_datum(0: datum row, 1: uint size)
+
+  #@random #@analysis #@pass
+  list<id_with_score> similar_row_from_datum_and_score(0: datum row, 1: float score)
+
+  #@random #@analysis #@pass
+  list<id_with_score> similar_row_from_datum_and_rate(0: datum row, 1: float rate)
 
   #@cht #@analysis #@pass
   datum decode_row(0: string id)
