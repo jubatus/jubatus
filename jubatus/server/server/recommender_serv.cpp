@@ -183,6 +183,36 @@ std::vector<id_with_score> recommender_serv::similar_row_from_id(
   return result;
 }
 
+std::vector<id_with_score> recommender_serv::similar_row_from_id_and_score(
+    std::string id,
+    float score) {
+  check_set_config();
+
+  vector<pair<string, float> > res(
+      recommender_->similar_row_from_id_and_score(id, score));
+  vector<id_with_score> result(res.size());
+  for (size_t i = 0; i < res.size(); ++i) {
+    result[i].id = res[i].first;
+    result[i].score = res[i].second;
+  }
+  return result;
+}
+
+std::vector<id_with_score> recommender_serv::similar_row_from_id_and_rate(
+    std::string id,
+    float rate) {
+  check_set_config();
+
+  vector<pair<string, float> > res(
+      recommender_->similar_row_from_id_and_rate(id, rate));
+  vector<id_with_score> result(res.size());
+  for (size_t i = 0; i < res.size(); ++i) {
+    result[i].id = res[i].first;
+    result[i].score = res[i].second;
+  }
+  return result;
+}
+
 std::vector<id_with_score> recommender_serv::similar_row_from_datum(
     datum data,
     size_t s) {
@@ -191,6 +221,36 @@ std::vector<id_with_score> recommender_serv::similar_row_from_datum(
   // TODO(unno): remove conversion code
   vector<pair<string, float> > res(
       recommender_->similar_row_from_datum(data, s));
+  vector<id_with_score> result(res.size());
+  for (size_t i = 0; i < res.size(); ++i) {
+    result[i].id = res[i].first;
+    result[i].score = res[i].second;
+  }
+  return result;
+}
+
+std::vector<id_with_score> recommender_serv::similar_row_from_datum_and_score(
+    datum data,
+    float score) {
+  check_set_config();
+
+  vector<pair<string, float> > res(
+      recommender_->similar_row_from_datum_and_score(data, score));
+  vector<id_with_score> result(res.size());
+  for (size_t i = 0; i < res.size(); ++i) {
+    result[i].id = res[i].first;
+    result[i].score = res[i].second;
+  }
+  return result;
+}
+
+std::vector<id_with_score> recommender_serv::similar_row_from_datum_and_rate(
+    datum data,
+    float rate) {
+  check_set_config();
+
+  vector<pair<string, float> > res(
+      recommender_->similar_row_from_datum_and_rate(data, rate));
   vector<id_with_score> result(res.size());
   for (size_t i = 0; i < res.size(); ++i) {
     result[i].id = res[i].first;

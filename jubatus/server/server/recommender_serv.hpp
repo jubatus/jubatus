@@ -62,8 +62,16 @@ class recommender_serv : public framework::server_base {
       core::fv_converter::datum dat);
   std::vector<id_with_score> similar_row_from_id(
       std::string id, size_t ret_num);
+  std::vector<id_with_score> similar_row_from_id_and_score(
+      std::string id, float score);
+  std::vector<id_with_score> similar_row_from_id_and_rate(
+      std::string id, float rate);
   std::vector<id_with_score> similar_row_from_datum(
       core::fv_converter::datum, size_t);
+  std::vector<id_with_score> similar_row_from_datum_and_score(
+      core::fv_converter::datum, float);
+  std::vector<id_with_score> similar_row_from_datum_and_rate(
+      core::fv_converter::datum, float);
 
   float calc_similarity(
       const core::fv_converter::datum&,
