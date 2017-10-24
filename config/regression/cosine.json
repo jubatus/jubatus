@@ -4,8 +4,8 @@
     "string_filter_rules" : [],
     "num_filter_types" : {},
     "num_filter_rules" : [],
-    "string_types": {},
-    "string_rules": [
+    "string_types" : {},
+    "string_rules" : [
       { "key" : "*", "type" : "str", "sample_weight" : "bin", "global_weight" : "bin" }
     ],
     "num_types" : {},
@@ -14,7 +14,8 @@
     ]
   },
   "parameter" : {
-    "sensitivity" : 0.1
+    "nearest_neighbor_num" : 16,
+    "weight": "uniform"
   },
-  "method": "PA"
+  "method" : "cosine"
 }

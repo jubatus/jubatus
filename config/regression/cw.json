@@ -14,7 +14,8 @@
     ]
   },
   "parameter" : {
-    "sensitivity" : 0.1
+    "sensitivity" : 0.1,
+    "regularization_weight" : 1.0
   },
-  "method": "PA"
+  "method": "CW"
 }
