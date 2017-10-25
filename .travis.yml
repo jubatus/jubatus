@@ -1,9 +1,9 @@
 language: cpp
 
 compiler:
-# gcc test is disabled (see #120)
-#  - gcc
-  - clang
+  - gcc
+# clang test is disabled (#1218)
+#  - clang
 
 before_install:
   - env
@@ -13,14 +13,14 @@ before_install:
 
 install:
   # dependency libraries
-  - sudo apt-get -qq install libmsgpack-dev liblog4cxx10-dev libopencv-*-dev
+  - sudo apt-get -qq install libmsgpack-dev liblog4cxx10-dev libopencv-dev libopencv-*-dev
   # jubatus-mpio
-  - git clone https://github.com/jubatus/jubatus-mpio.git
-  - pushd jubatus-mpio && git checkout develop && ./bootstrap && ./configure && make && sudo make install && popd
+  - git clone -b develop --depth 1 https://github.com/jubatus/jubatus-mpio.git
+  - pushd jubatus-mpio && ./bootstrap && ./configure && make && sudo make install && popd
   - sudo ldconfig
   # jubatus-msgpack-rpc
-  - git clone https://github.com/jubatus/jubatus-msgpack-rpc.git
-  - pushd jubatus-msgpack-rpc/cpp && git checkout develop && ./bootstrap && ./configure --with-jubatus-mpio=/usr/local && make && sudo make install && popd
+  - git clone -b develop --depth 1 https://github.com/jubatus/jubatus-msgpack-rpc.git
+  - pushd jubatus-msgpack-rpc/cpp && ./bootstrap && ./configure --with-jubatus-mpio=/usr/local && make && sudo make install && popd
   - sudo ldconfig
   # zookeeper
   - wget http://mirrors.ocf.berkeley.edu/apache/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz && tar xf zookeeper-3.4.8.tar.gz
@@ -45,9 +45,11 @@ install:
   - pushd mecab-ipadic-2.7.0-20070801 && ./configure --with-charset=utf8 && make && sudo make install && popd
   - sudo ldconfig
   # jubatus_core
-  - git clone https://github.com/jubatus/jubatus_core.git
-  - pushd jubatus_core && git checkout ${TRAVIS_BRANCH} && ./waf configure && ./waf && sudo ./waf install && popd
+  - git clone -b ${TRAVIS_BRANCH} --depth 1 https://github.com/jubatus/jubatus_core.git
+  - pushd jubatus_core && ./waf configure && ./waf && sudo ./waf install && popd
   - sudo ldconfig
+  # OpenCV hack
+  - sudo ln /dev/null /dev/raw1394
 
 
 script:
