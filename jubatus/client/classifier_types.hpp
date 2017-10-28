@@ -1,4 +1,4 @@
-// This file is auto-generated from classifier.idl(0.8.9-17-gd4c007f) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from classifier.idl(0.8.9-17-gd4c007f) with jenerator version 0.9.4-42-g70f7539/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_CLASSIFIER_TYPES_HPP_
