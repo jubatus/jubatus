@@ -1,3 +1,11 @@
+Release 1.0.6 - 2017/10/30
+--------------------------
+
+* New Features
+    * Recommender: Add filtering API (#1100, #1216)
+* Improvements
+    * Regression: Add example configs (#1206, #1207)
+
 Release 1.0.5 - 2017/08/28
 --------------------------
 
