@@ -1,4 +1,4 @@
-// This file is auto-generated from burst.idl(0.6.4-96-g66ed74d) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from burst.idl(0.6.4-96-g66ed74d) with jenerator version 0.9.4-42-g70f7539/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_BURST_TYPES_HPP_

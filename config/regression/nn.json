@@ -4,8 +4,8 @@
     "string_filter_rules" : [],
     "num_filter_types" : {},
     "num_filter_rules" : [],
-    "string_types": {},
-    "string_rules": [
+    "string_types" : {},
+    "string_rules" : [
       { "key" : "*", "type" : "str", "sample_weight" : "bin", "global_weight" : "bin" }
     ],
     "num_types" : {},
@@ -13,8 +13,13 @@
       { "key" : "*", "type" : "num" }
     ]
   },
-  "parameter" : {
-    "sensitivity" : 0.1
-  },
-  "method": "PA"
+  "method" : "NN",
+  "parameter": {
+    "method": "euclid_lsh",
+    "parameter": {
+      "hash_num": 64
+    },
+    "nearest_neighbor_num": 128,
+    "weight": "uniform"
+  }
 }

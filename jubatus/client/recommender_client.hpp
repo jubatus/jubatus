@@ -1,4 +1,4 @@
-// This file is auto-generated from recommender.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.8.5-6-g5a2c923/feature/improve-get_labels-ulong
+// This file is auto-generated from recommender.idl(1.0.5-6-g051a909) with jenerator version 0.9.4-42-g70f7539/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_CLIENT_RECOMMENDER_CLIENT_HPP_
@@ -55,10 +55,38 @@ class recommender : public jubatus::client::common::client {
     return f.get<std::vector<id_with_score> >();
   }
 
+  std::vector<id_with_score> similar_row_from_id_and_score(
+      const std::string& id, float score) {
+    msgpack::rpc::future f = c_.call("similar_row_from_id_and_score", name_, id,
+        score);
+    return f.get<std::vector<id_with_score> >();
+  }
+
+  std::vector<id_with_score> similar_row_from_id_and_rate(const std::string& id,
+      float rate) {
+    msgpack::rpc::future f = c_.call("similar_row_from_id_and_rate", name_, id,
+        rate);
+    return f.get<std::vector<id_with_score> >();
+  }
+
   std::vector<id_with_score> similar_row_from_datum(
       const jubatus::client::common::datum& row, uint32_t size) {
     msgpack::rpc::future f = c_.call("similar_row_from_datum", name_, row,
         size);
+    return f.get<std::vector<id_with_score> >();
+  }
+
+  std::vector<id_with_score> similar_row_from_datum_and_score(
+      const jubatus::client::common::datum& row, float score) {
+    msgpack::rpc::future f = c_.call("similar_row_from_datum_and_score", name_,
+        row, score);
+    return f.get<std::vector<id_with_score> >();
+  }
+
+  std::vector<id_with_score> similar_row_from_datum_and_rate(
+      const jubatus::client::common::datum& row, float rate) {
+    msgpack::rpc::future f = c_.call("similar_row_from_datum_and_rate", name_,
+        row, rate);
     return f.get<std::vector<id_with_score> >();
   }
 

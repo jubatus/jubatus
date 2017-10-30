@@ -1,4 +1,4 @@
-// This file is auto-generated from weight.idl with jenerator version 0.8.5-6-g5a2c923/develop
+// This file is auto-generated from weight.idl(0.9.0-24-gda61383) with jenerator version 0.9.4-42-g70f7539/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_WEIGHT_TYPES_HPP_
