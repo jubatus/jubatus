@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(0.9.0-26-g051b301) with jenerator version 0.9.4-42-g70f7539/develop
+// This file is auto-generated from anomaly.idl with jenerator version 0.9.4-42-g70f7539/remotes/origin/feature/1100
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -23,6 +23,8 @@ int run_proxy(int argc, char* argv[]) {
         &jubatus::server::framework::all_and));
     k.register_async_random<id_with_score, jubatus::core::fv_converter::datum>(
         "add");
+    k.register_async_random<std::vector<std::string>,
+        std::vector<jubatus::core::fv_converter::datum> >("add_bulk");
     k.register_async_cht<2, float, jubatus::core::fv_converter::datum>("update",
         jubatus::util::lang::function<float(float, float)>(
         &jubatus::server::framework::pass<float>));
