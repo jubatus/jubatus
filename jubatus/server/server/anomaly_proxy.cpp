@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl with jenerator version 0.9.4-42-g70f7539/remotes/origin/feature/1100
+// This file is auto-generated from anomaly.idl(1.0.6-6-g2cf96c3) with jenerator version 0.9.4-42-g70f7539/master
 // *** DO NOT EDIT ***
 
 #include <map>
