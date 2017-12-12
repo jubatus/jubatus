@@ -188,7 +188,7 @@ vector<string> anomaly_serv::add_bulk(
     event_model_updated();
     return anomaly_->add_bulk(points);
 }
-  
+
 id_with_score anomaly_serv::add_zk(const string&id_str, const datum& d) {
   vector<pair<string, int> > nodes;
   float score = 0;
