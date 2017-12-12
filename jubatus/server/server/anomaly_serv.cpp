@@ -58,7 +58,7 @@ namespace server {
 namespace {
 
 struct anomaly_serv_config {
-  std::string method;
+  string method;
   // TODO(oda): we should use optional<jsonconfig::config> instead of
   //            jsonconfig::config ?
   core::common::jsonconfig::config parameter;
@@ -108,7 +108,7 @@ uint64_t anomaly_serv::user_data_version() const {
   return 1;  // should be inclemented when model data is modified
 }
 
-void anomaly_serv::set_config(const std::string& config) {
+void anomaly_serv::set_config(const string& config) {
   core::common::jsonconfig::config conf_root(lexical_cast<json>(config));
   anomaly_serv_config conf =
     core::common::jsonconfig::config_cast_check<anomaly_serv_config>(conf_root);
@@ -125,7 +125,7 @@ void anomaly_serv::set_config(const std::string& config) {
   }
 #endif
 
-  std::string my_id;
+  string my_id;
 #ifdef HAVE_ZOOKEEPER_H
   my_id = common::build_loc_str(argv().eth, argv().port);
 #endif
@@ -172,6 +172,21 @@ id_with_score anomaly_serv::add(const datum& data) {
     return add_zk(id_str, data);
   }
 #endif
+}
+
+vector<string> anomaly_serv::add_bulk(
+    const vector<datum>& data) /* nolock!! */ {
+    check_set_config();
+    vector<pair<string, datum> > points;
+    vector<datum>::const_iterator iter = data.begin();
+    for (; iter < data.end(); ++iter) {
+      uint64_t id = idgen_->generate();
+      string id_str = lexical_cast<string>(id);
+      points.push_back(make_pair(id_str, *iter));
+    }
+    jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
+    event_model_updated();
+    return anomaly_->add_bulk(points);
 }
 
 id_with_score anomaly_serv::add_zk(const string&id_str, const datum& d) {
@@ -295,7 +310,7 @@ float anomaly_serv::selective_update(
   }
 }
 
-bool anomaly_serv::load(const std::string& id) {
+bool anomaly_serv::load(const string& id) {
   if (server_base::load(id)) {
     reset_id_generator();
     return true;
@@ -303,7 +318,7 @@ bool anomaly_serv::load(const std::string& id) {
   return false;
 }
 
-void anomaly_serv::load_file(const std::string& path) {
+void anomaly_serv::load_file(const string& path) {
   server_base::load_file(path);
   reset_id_generator();
 }

@@ -56,6 +56,9 @@ class anomaly_serv : public framework::server_base {
   bool clear_row(const std::string& id);
 
   id_with_score add(const core::fv_converter::datum& d);
+  std::vector<std::string> add_bulk(
+      const std::vector<jubatus::core::fv_converter::datum>& data);
+
   float update(const std::string& id, const core::fv_converter::datum& d);
   float overwrite(const std::string& id, const core::fv_converter::datum& d);
 
