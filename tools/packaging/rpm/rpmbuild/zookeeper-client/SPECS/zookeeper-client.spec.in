@@ -63,7 +63,7 @@ popd
 
 %files
 %defattr(-,root,root,-)
-%doc README.txt NOTICE.txt LICENSE.txt CHANGES.txt
+%doc README.md NOTICE.txt LICENSE.txt
 %{_libdir}/libzookeeper_st.so.*
 %{_libdir}/libzookeeper_mt.so.*
 
