@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(0.9.0-26-g051b301) with jenerator version 0.9.4-42-g70f7539/develop
+// This file is auto-generated from anomaly.idl(1.0.6-6-g2cf96c3) with jenerator version 0.9.4-42-g70f7539/master
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -25,6 +25,10 @@ class anomaly_impl : public jubatus::server::common::mprpc::rpc_server {
     rpc_server::add<id_with_score(std::string,
         jubatus::core::fv_converter::datum)>("add", jubatus::util::lang::bind(
         &anomaly_impl::add, this, jubatus::util::lang::_2));
+    rpc_server::add<std::vector<std::string>(std::string,
+        std::vector<jubatus::core::fv_converter::datum>)>("add_bulk",
+        jubatus::util::lang::bind(&anomaly_impl::add_bulk, this,
+        jubatus::util::lang::_2));
     rpc_server::add<float(std::string, std::string,
         jubatus::core::fv_converter::datum)>("update",
         jubatus::util::lang::bind(&anomaly_impl::update, this,
@@ -62,6 +66,12 @@ class anomaly_impl : public jubatus::server::common::mprpc::rpc_server {
   id_with_score add(const jubatus::core::fv_converter::datum& row) {
     NOLOCK_(p_);
     return get_p()->add(row);
+  }
+
+  std::vector<std::string> add_bulk(
+      const std::vector<jubatus::core::fv_converter::datum>& data) {
+    NOLOCK_(p_);
+    return get_p()->add_bulk(data);
   }
 
   float update(const std::string& id,

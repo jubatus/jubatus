@@ -29,6 +29,10 @@ service anomaly {
   #@random #@nolock #@pass
   id_with_score add(0: datum row)
 
+  #- add points.
+  #@random #@nolock #@pass
+  list<string> add_bulk(0: list<datum> data)
+
   #- update a point.
   #@cht #@update #@pass
   float update(0: string id, 1: datum row)
