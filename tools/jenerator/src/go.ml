@@ -74,10 +74,14 @@ let rec gen_type = function
   | Bool -> "bool"
   | Int(signed, bytes) -> begin
     match signed, bytes with
-    | _, 1 -> "int8"
-    | _, 2 -> "int16"
-    | _, 4 -> "int32"
-    | _, 8 -> "int64"
+    | true, 1 -> "int8"
+    | true, 2 -> "int16"
+    | true, 4 -> "int32"
+    | true, 8 -> "int64"
+    | false, 1 -> "uint8"
+    | false, 2 -> "uint16"
+    | false, 4 -> "uint32"
+    | false, 8 -> "uint64"
     | _ -> raise (Unknown_type (Printf.sprintf "unknown int type: %b, %d" signed bytes))
   end
   | Float(_) -> "float64"
