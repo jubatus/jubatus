@@ -1,3 +1,10 @@
+Release 1.0.8 - 2018/02/26
+--------------------------
+
+* Bug fixes
+    * Fix wrong conversion in Go-lang client generator (#1223)
+    * Fix missing dependency for opencv plugin in deb package (#1222, #1224)
+
 Release 1.0.7 - 2017/12/18
 --------------------------
 
