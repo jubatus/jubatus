@@ -15,9 +15,9 @@
   },
   "parameter" : {
     "k" : 3,
-    "seed": 0,
-    "distance": "euclidean"  
+    "seed": 0
   },
+  "distance": "euclidean",
   "method" : "kmeans",
   "compressor_method": "simple",
   "compressor_parameter": {
