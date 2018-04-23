@@ -1,3 +1,9 @@
+Release 1.0.9 - 2018/04/23
+--------------------------
+
+* New Features
+    * Clustering: Add distance metrics option (#1228)
+
 Release 1.0.8 - 2018/02/26
 --------------------------
 

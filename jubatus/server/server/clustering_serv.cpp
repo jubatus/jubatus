@@ -43,6 +43,7 @@ namespace {
 struct clustering_serv_config {
   std::string method;
   std::string compressor_method;
+  jubatus::util::data::optional<std::string> distance;
   jubatus::util::data::optional<core::common::jsonconfig::config> parameter;
   jubatus::util::data::optional<core::common::jsonconfig::config>
                                                        compressor_parameter;
@@ -54,7 +55,8 @@ struct clustering_serv_config {
       & JUBA_MEMBER(parameter)
       & JUBA_MEMBER(converter)
       & JUBA_MEMBER(compressor_method)
-      & JUBA_MEMBER(compressor_parameter);
+      & JUBA_MEMBER(compressor_parameter)
+      & JUBA_MEMBER(distance);
   }
 };
 
@@ -90,6 +92,7 @@ void clustering_serv::set_config(const std::string& config) {
 
   std::string method = conf.method;
   std::string compressor_method = conf.compressor_method;
+  std::string distance = "euclidean";
   core::common::jsonconfig::config param;
   core::common::jsonconfig::config compressor_param;
   if (conf.parameter) {
@@ -99,6 +102,9 @@ void clustering_serv::set_config(const std::string& config) {
   if (conf.compressor_parameter) {
     compressor_param = *conf.compressor_parameter;
   }
+  if (conf.distance) {
+    distance = *conf.distance;
+  }
 
   const std::string name = get_server_identifier(argv());
 
@@ -107,6 +113,7 @@ void clustering_serv::set_config(const std::string& config) {
           name,
           method,
           compressor_method,
+          distance,
           param,
           compressor_param),
       converter));
