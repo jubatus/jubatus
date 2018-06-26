@@ -12,6 +12,7 @@ First create Docker images for building package:
 docker build -t jubatus-debbuild-ubuntu12 -f docker/Dockerfile.ubuntu12 .
 docker build -t jubatus-debbuild-ubuntu14 -f docker/Dockerfile.ubuntu14 .
 docker build -t jubatus-debbuild-ubuntu16 -f docker/Dockerfile.ubuntu16 .
+docker build -t jubatus-debbuild-ubuntu18 -f docker/Dockerfile.ubuntu18 .
 ```
 
 Modify `jubapkg_version` as appropriate.
@@ -22,6 +23,7 @@ Then build the package:
 docker run --rm -it -v $PWD:/pkg jubatus-debbuild-ubuntu12 sh -c 'cd pkg && ./jubapkg -f -c -d -b -p deb -D ubuntu12'
 docker run --rm -it -v $PWD:/pkg jubatus-debbuild-ubuntu14 sh -c 'cd pkg && ./jubapkg -f -c -d -b -p deb -D ubuntu14'
 docker run --rm -it -v $PWD:/pkg jubatus-debbuild-ubuntu16 sh -c 'cd pkg && ./jubapkg -f -c -d -b -p deb -D ubuntu16'
+docker run --rm -it -v $PWD:/pkg jubatus-debbuild-ubuntu18 sh -c 'cd pkg && ./jubapkg -f -c -d -b -p deb -D ubuntu18'
 ```
 
 Do not run these commands simultaneously!
