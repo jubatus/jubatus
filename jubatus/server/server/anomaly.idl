@@ -16,7 +16,7 @@
 
 message id_with_score {
   0: string id
-  1: float score
+  1: double score
 }
 
 service anomaly {
@@ -35,11 +35,11 @@ service anomaly {
 
   #- update a point.
   #@cht #@update #@pass
-  float update(0: string id, 1: datum row)
+  double update(0: string id, 1: datum row)
 
   #- overwrite a point.
   #@cht #@update #@pass
-  float overwrite(0: string id, 1: datum row)
+  double overwrite(0: string id, 1: datum row)
 
   #- clear whole data.
   #@broadcast #@update #@all_and
@@ -47,7 +47,7 @@ service anomaly {
 
   #- calculate an anomaly measure value without adding a point.
   #@random #@analysis #@pass
-  float calc_score(0: datum row)
+  double calc_score(0: datum row)
 
   #@random #@analysis #@pass
   list<string> get_all_rows()
