@@ -74,7 +74,7 @@ TEST(regression_test, train) {
 
 TEST(regression_test, estimate) {
   regression cli(host(), port(), cluster_name(), timeout());
-  vector<float> result = cli.estimate(vector<datum>());
+  vector<double> result = cli.estimate(vector<datum>());
   result.size();
 }
 
