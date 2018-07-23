@@ -24,14 +24,14 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_cht<1, bool, jubatus::core::fv_converter::datum>("set_row",
         jubatus::util::lang::function<bool(bool, bool)>(
         &jubatus::server::framework::pass<bool>));
-    k.register_async_random<std::vector<std::pair<std::string, float> >,
+    k.register_async_random<std::vector<std::pair<std::string, double> >,
         std::string, uint32_t>("neighbor_row_from_id");
-    k.register_async_random<std::vector<std::pair<std::string, float> >,
+    k.register_async_random<std::vector<std::pair<std::string, double> >,
         jubatus::core::fv_converter::datum, uint32_t>(
         "neighbor_row_from_datum");
-    k.register_async_random<std::vector<std::pair<std::string, float> >,
+    k.register_async_random<std::vector<std::pair<std::string, double> >,
         std::string, uint32_t>("similar_row_from_id");
-    k.register_async_random<std::vector<std::pair<std::string, float> >,
+    k.register_async_random<std::vector<std::pair<std::string, double> >,
         jubatus::core::fv_converter::datum, uint32_t>("similar_row_from_datum");
     k.register_async_random<std::vector<std::string> >("get_all_rows");
     return k.run();

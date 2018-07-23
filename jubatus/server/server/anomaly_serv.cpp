@@ -165,7 +165,7 @@ id_with_score anomaly_serv::add(const datum& data) {
     jubatus::util::concurrent::scoped_wlock lk(rw_mutex());
     event_model_updated();
     // TODO(unno): remove conversion code
-    pair<string, float> res = anomaly_->add(id_str, data);
+    pair<string, double> res = anomaly_->add(id_str, data);
     return id_with_score(res.first, res.second);
 #ifdef HAVE_ZOOKEEPER_H
   } else {
@@ -191,7 +191,7 @@ vector<string> anomaly_serv::add_bulk(
 
 id_with_score anomaly_serv::add_zk(const string&id_str, const datum& d) {
   vector<pair<string, int> > nodes;
-  float score = 0;
+  double score = 0;
   find_from_cht(id_str, 2, nodes);
   if (nodes.empty()) {
     throw JUBATUS_EXCEPTION(
@@ -224,18 +224,18 @@ id_with_score anomaly_serv::add_zk(const string&id_str, const datum& d) {
   return id_with_score(id_str, score);
 }
 
-float anomaly_serv::update(const string& id, const datum& data) {
+double anomaly_serv::update(const string& id, const datum& data) {
   check_set_config();
 
-  float score = anomaly_->update(id, data);
+  double score = anomaly_->update(id, data);
   DLOG(INFO) << "point updated: " << id;
   return score;
 }
 
-float anomaly_serv::overwrite(const string& id, const datum& data) {
+double anomaly_serv::overwrite(const string& id, const datum& data) {
   check_set_config();
 
-  float score = anomaly_->overwrite(id, data);
+  double score = anomaly_->overwrite(id, data);
   DLOG(INFO) << "point overwritten: " << id;
   return score;
 }
@@ -247,7 +247,7 @@ bool anomaly_serv::clear() {
   return true;
 }
 
-float anomaly_serv::calc_score(const datum& data) const {
+double anomaly_serv::calc_score(const datum& data) const {
   check_set_config();
   return anomaly_->calc_score(data);
 }
@@ -286,7 +286,7 @@ void anomaly_serv::find_from_cht(
  * Caller is responsible for handling exceptions including RPC
  * errors.
  */
-float anomaly_serv::selective_update(
+double anomaly_serv::selective_update(
     const string& host,
     int port,
     const string& id,

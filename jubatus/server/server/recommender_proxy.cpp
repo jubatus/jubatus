@@ -1,4 +1,4 @@
-// This file is auto-generated from recommender.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.9.4-42-g70f7539/develop
+// This file is auto-generated from recommender.idl(1.0.5-6-g051a909) with jenerator version 0.9.4-42-g70f7539/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -40,7 +40,7 @@ int run_proxy(int argc, char* argv[]) {
         jubatus::util::lang::function<std::vector<id_with_score>(
         std::vector<id_with_score>, std::vector<id_with_score>)>(
         &jubatus::server::framework::pass<std::vector<id_with_score> >));
-    k.register_async_cht<2, std::vector<id_with_score>, float>(
+    k.register_async_cht<2, std::vector<id_with_score>, double>(
         "similar_row_from_id_and_score",
         jubatus::util::lang::function<std::vector<id_with_score>(
         std::vector<id_with_score>, std::vector<id_with_score>)>(
@@ -53,7 +53,7 @@ int run_proxy(int argc, char* argv[]) {
     k.register_async_random<std::vector<id_with_score>,
         jubatus::core::fv_converter::datum, uint32_t>("similar_row_from_datum");
     k.register_async_random<std::vector<id_with_score>,
-        jubatus::core::fv_converter::datum, float>(
+        jubatus::core::fv_converter::datum, double>(
         "similar_row_from_datum_and_score");
     k.register_async_random<std::vector<id_with_score>,
         jubatus::core::fv_converter::datum, float>(
@@ -64,9 +64,9 @@ int run_proxy(int argc, char* argv[]) {
         jubatus::core::fv_converter::datum)>(
         &jubatus::server::framework::pass<jubatus::core::fv_converter::datum>));
     k.register_async_random<std::vector<std::string> >("get_all_rows");
-    k.register_async_random<float, jubatus::core::fv_converter::datum,
+    k.register_async_random<double, jubatus::core::fv_converter::datum,
         jubatus::core::fv_converter::datum>("calc_similarity");
-    k.register_async_random<float, jubatus::core::fv_converter::datum>(
+    k.register_async_random<double, jubatus::core::fv_converter::datum>(
         "calc_l2norm");
     return k.run();
   } catch (const jubatus::core::common::exception::jubatus_exception& e) {

@@ -23,7 +23,7 @@ class regression_impl : public jubatus::server::common::mprpc::rpc_server {
     rpc_server::add<int32_t(std::string, std::vector<scored_datum>)>("train",
         jubatus::util::lang::bind(&regression_impl::train, this,
         jubatus::util::lang::_2));
-    rpc_server::add<std::vector<float>(std::string,
+    rpc_server::add<std::vector<double>(std::string,
         std::vector<jubatus::core::fv_converter::datum>)>("estimate",
         jubatus::util::lang::bind(&regression_impl::estimate, this,
         jubatus::util::lang::_2));
@@ -48,7 +48,7 @@ class regression_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->train(train_data);
   }
 
-  std::vector<float> estimate(
+  std::vector<double> estimate(
       const std::vector<jubatus::core::fv_converter::datum>& estimate_data) {
     JRLOCK_(p_);
     return get_p()->estimate(estimate_data);

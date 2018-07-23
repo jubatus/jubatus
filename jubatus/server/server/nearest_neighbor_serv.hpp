@@ -31,7 +31,7 @@ namespace jubatus {
 namespace server {
 
 using jubatus::core::nearest_neighbor::nearest_neighbor_base;
-typedef std::vector<std::pair<std::string, float> > neighbor_result;
+typedef std::vector<std::pair<std::string, double> > neighbor_result;
 
 class nearest_neighbor_serv : public framework::server_base {
  public:

@@ -59,12 +59,12 @@ class anomaly_serv : public framework::server_base {
   std::vector<std::string> add_bulk(
       const std::vector<jubatus::core::fv_converter::datum>& data);
 
-  float update(const std::string& id, const core::fv_converter::datum& d);
-  float overwrite(const std::string& id, const core::fv_converter::datum& d);
+  double update(const std::string& id, const core::fv_converter::datum& d);
+  double overwrite(const std::string& id, const core::fv_converter::datum& d);
 
   bool clear();
 
-  float calc_score(const core::fv_converter::datum& d) const;
+  double calc_score(const core::fv_converter::datum& d) const;
 
   std::vector<std::string> get_all_rows() const;
 
@@ -83,7 +83,7 @@ class anomaly_serv : public framework::server_base {
       size_t n,
       std::vector<std::pair<std::string, int> >& out);
 
-  float selective_update(
+  double selective_update(
       const std::string& host,
       int port,
       const std::string& id,
