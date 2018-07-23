@@ -21,10 +21,10 @@ struct id_with_score {
  public:
   MSGPACK_DEFINE(id, score);
   std::string id;
-  float score;
+  double score;
   id_with_score() {
   }
-  id_with_score(const std::string& id, float score)
+  id_with_score(const std::string& id, double score)
     : id(id), score(score) {
   }
 };

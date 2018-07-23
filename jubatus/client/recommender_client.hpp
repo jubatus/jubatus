@@ -56,7 +56,7 @@ class recommender : public jubatus::client::common::client {
   }
 
   std::vector<id_with_score> similar_row_from_id_and_score(
-      const std::string& id, float score) {
+      const std::string& id, double score) {
     msgpack::rpc::future f = c_.call("similar_row_from_id_and_score", name_, id,
         score);
     return f.get<std::vector<id_with_score> >();
@@ -77,7 +77,7 @@ class recommender : public jubatus::client::common::client {
   }
 
   std::vector<id_with_score> similar_row_from_datum_and_score(
-      const jubatus::client::common::datum& row, float score) {
+      const jubatus::client::common::datum& row, double score) {
     msgpack::rpc::future f = c_.call("similar_row_from_datum_and_score", name_,
         row, score);
     return f.get<std::vector<id_with_score> >();
@@ -100,15 +100,15 @@ class recommender : public jubatus::client::common::client {
     return f.get<std::vector<std::string> >();
   }
 
-  float calc_similarity(const jubatus::client::common::datum& lhs,
+  double calc_similarity(const jubatus::client::common::datum& lhs,
       const jubatus::client::common::datum& rhs) {
     msgpack::rpc::future f = c_.call("calc_similarity", name_, lhs, rhs);
-    return f.get<float>();
+    return f.get<double>();
   }
 
-  float calc_l2norm(const jubatus::client::common::datum& row) {
+  double calc_l2norm(const jubatus::client::common::datum& row) {
     msgpack::rpc::future f = c_.call("calc_l2norm", name_, row);
-    return f.get<float>();
+    return f.get<double>();
   }
 };
 
