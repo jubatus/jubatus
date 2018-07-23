@@ -45,7 +45,7 @@ TEST(pb_binary_feature, trivial) {
   params["class"] = "BinaryFeature";
   pb_binary_feature pb(setup(params));
 
-  vector<pair<string, float> > ret_fv;
+  vector<pair<string, double> > ret_fv;
   pb.add_feature("key", "value", ret_fv);
   ASSERT_EQ(1, ret_fv.size());
   EXPECT_EQ("result", ret_fv[0].first);

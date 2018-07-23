@@ -45,7 +45,7 @@ TEST(pb_num_feature, trivial) {
   params["class"] = "NumFeature";
   pb_num_feature pb(setup(params));
 
-  vector<pair<string, float> > ret_fv;
+  vector<pair<string, double> > ret_fv;
   pb.add_feature("key", 1.0, ret_fv);
   ASSERT_EQ(1, ret_fv.size());
   EXPECT_EQ("result", ret_fv[0].first);

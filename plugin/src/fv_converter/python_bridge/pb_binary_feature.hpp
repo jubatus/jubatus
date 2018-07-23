@@ -54,7 +54,7 @@ class pb_binary_feature
   void add_feature(
       const std::string& key,
       const std::string& value,
-      std::vector<std::pair<std::string, float> >& ret_fv) const;
+      std::vector<std::pair<std::string, double> >& ret_fv) const;
 
  private:
   std::string name_;
