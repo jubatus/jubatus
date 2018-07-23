@@ -45,7 +45,7 @@ class image_feature:public jubatus::core::fv_converter::binary_feature {
     void add_feature(
       const std::string& key,
       const std::string& value,
-      std::vector<std::pair<std::string, float> >& ret_fv) const;
+      std::vector<std::pair<std::string, double> >& ret_fv) const;
     void dense_sampler(
       const cv::Mat mat,
       const int step,
