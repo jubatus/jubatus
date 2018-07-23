@@ -27,7 +27,7 @@ namespace client {
 namespace common {
 
 struct datum {
-  void add_number(const std::string& key, float value) {
+  void add_number(const std::string& key, double value) {
     num_values.push_back(std::make_pair(key, value));
   }
 
