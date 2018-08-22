@@ -63,7 +63,7 @@ void image_feature::dense_sampler(
 void image_feature::add_feature(
   const std::string& key,
   const std::string& value,
-  std::vector<std::pair<std::string, float> >& ret_fv) const {
+  std::vector<std::pair<std::string, double> >& ret_fv) const {
   std::vector<unsigned char> buf(value.begin(), value.end());
 
 #if(CV_MAJOR_VERSION == 2)
@@ -99,7 +99,7 @@ void image_feature::add_feature(
           std::ostringstream oss;
           oss << key << '#' << algorithm_
               << '/' << x << '-' << y << '-' << c;
-          float val = static_cast<float>(vec[c]) / 255.0;
+          double val = static_cast<double>(vec[c]) / 255.0;
           ret_fv.push_back(std::make_pair(oss.str(), val));
         }
       }

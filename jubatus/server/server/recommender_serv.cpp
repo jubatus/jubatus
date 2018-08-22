@@ -173,7 +173,7 @@ std::vector<id_with_score> recommender_serv::similar_row_from_id(
   check_set_config();
 
   // TODO(unno): remove conversion code
-  vector<pair<string, float> > res(
+  vector<pair<string, double> > res(
       recommender_->similar_row_from_id(id, ret_num));
   vector<id_with_score> result(res.size());
   for (size_t i = 0; i < res.size(); ++i) {
@@ -185,10 +185,10 @@ std::vector<id_with_score> recommender_serv::similar_row_from_id(
 
 std::vector<id_with_score> recommender_serv::similar_row_from_id_and_score(
     std::string id,
-    float score) {
+    double score) {
   check_set_config();
 
-  vector<pair<string, float> > res(
+  vector<pair<string, double> > res(
       recommender_->similar_row_from_id_and_score(id, score));
   vector<id_with_score> result(res.size());
   for (size_t i = 0; i < res.size(); ++i) {
@@ -203,7 +203,7 @@ std::vector<id_with_score> recommender_serv::similar_row_from_id_and_rate(
     float rate) {
   check_set_config();
 
-  vector<pair<string, float> > res(
+  vector<pair<string, double> > res(
       recommender_->similar_row_from_id_and_rate(id, rate));
   vector<id_with_score> result(res.size());
   for (size_t i = 0; i < res.size(); ++i) {
@@ -219,7 +219,7 @@ std::vector<id_with_score> recommender_serv::similar_row_from_datum(
   check_set_config();
 
   // TODO(unno): remove conversion code
-  vector<pair<string, float> > res(
+  vector<pair<string, double> > res(
       recommender_->similar_row_from_datum(data, s));
   vector<id_with_score> result(res.size());
   for (size_t i = 0; i < res.size(); ++i) {
@@ -231,10 +231,10 @@ std::vector<id_with_score> recommender_serv::similar_row_from_datum(
 
 std::vector<id_with_score> recommender_serv::similar_row_from_datum_and_score(
     datum data,
-    float score) {
+    double score) {
   check_set_config();
 
-  vector<pair<string, float> > res(
+  vector<pair<string, double> > res(
       recommender_->similar_row_from_datum_and_score(data, score));
   vector<id_with_score> result(res.size());
   for (size_t i = 0; i < res.size(); ++i) {
@@ -249,7 +249,7 @@ std::vector<id_with_score> recommender_serv::similar_row_from_datum_and_rate(
     float rate) {
   check_set_config();
 
-  vector<pair<string, float> > res(
+  vector<pair<string, double> > res(
       recommender_->similar_row_from_datum_and_rate(data, rate));
   vector<id_with_score> result(res.size());
   for (size_t i = 0; i < res.size(); ++i) {
@@ -271,13 +271,13 @@ std::vector<std::string> recommender_serv::get_all_rows() {
   return recommender_->get_all_rows();
 }
 
-float recommender_serv::calc_similarity(const datum& l, const datum& r) {
+double recommender_serv::calc_similarity(const datum& l, const datum& r) {
   check_set_config();
 
   return recommender_->calc_similarity(l, r);
 }
 
-float recommender_serv::calc_l2norm(const datum& q) {
+double recommender_serv::calc_l2norm(const datum& q) {
   check_set_config();
 
   return recommender_->calc_l2norm(q);

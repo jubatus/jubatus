@@ -29,7 +29,7 @@
 namespace jubatus {
 namespace server {
 
-typedef std::vector<std::pair<std::string, float> > similar_result;
+typedef std::vector<std::pair<std::string, double> > similar_result;
 
 class recommender_serv : public framework::server_base {
  public:
@@ -63,20 +63,20 @@ class recommender_serv : public framework::server_base {
   std::vector<id_with_score> similar_row_from_id(
       std::string id, size_t ret_num);
   std::vector<id_with_score> similar_row_from_id_and_score(
-      std::string id, float score);
+      std::string id, double score);
   std::vector<id_with_score> similar_row_from_id_and_rate(
       std::string id, float rate);
   std::vector<id_with_score> similar_row_from_datum(
       core::fv_converter::datum, size_t);
   std::vector<id_with_score> similar_row_from_datum_and_score(
-      core::fv_converter::datum, float);
+      core::fv_converter::datum, double);
   std::vector<id_with_score> similar_row_from_datum_and_rate(
       core::fv_converter::datum, float);
 
-  float calc_similarity(
+  double calc_similarity(
       const core::fv_converter::datum&,
       const core::fv_converter::datum&);
-  float calc_l2norm(const core::fv_converter::datum& q);
+  double calc_l2norm(const core::fv_converter::datum& q);
 
   core::fv_converter::datum decode_row(std::string id);
   std::vector<std::string> get_all_rows();

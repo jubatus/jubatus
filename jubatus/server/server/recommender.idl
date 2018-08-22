@@ -16,7 +16,7 @@
 
 message id_with_score {
   0: string id
-  1: float score
+  1: double score
 }
 
 service recommender {
@@ -40,7 +40,7 @@ service recommender {
   list<id_with_score> similar_row_from_id(0: string id, 1: uint size)
 
   #@cht #@analysis #@pass
-  list<id_with_score> similar_row_from_id_and_score(0: string id, 1: float score)
+  list<id_with_score> similar_row_from_id_and_score(0: string id, 1: double score)
 
   #@cht #@analysis #@pass
   list<id_with_score> similar_row_from_id_and_rate(0: string id, 1: float rate)
@@ -49,7 +49,7 @@ service recommender {
   list<id_with_score> similar_row_from_datum(0: datum row, 1: uint size)
 
   #@random #@analysis #@pass
-  list<id_with_score> similar_row_from_datum_and_score(0: datum row, 1: float score)
+  list<id_with_score> similar_row_from_datum_and_score(0: datum row, 1: double score)
 
   #@random #@analysis #@pass
   list<id_with_score> similar_row_from_datum_and_rate(0: datum row, 1: float rate)
@@ -61,9 +61,9 @@ service recommender {
   list<string> get_all_rows()
 
   #@random #@analysis #@pass
-  float calc_similarity(0: datum lhs, 1:datum rhs)
+  double calc_similarity(0: datum lhs, 1:datum rhs)
 
   #@random #@analysis #@pass
-  float calc_l2norm(0: datum row)
+  double calc_l2norm(0: datum row)
 
 }

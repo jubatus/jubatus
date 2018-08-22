@@ -27,10 +27,10 @@ class regression : public jubatus::client::common::client {
     return f.get<int32_t>();
   }
 
-  std::vector<float> estimate(
+  std::vector<double> estimate(
       const std::vector<jubatus::client::common::datum>& estimate_data) {
     msgpack::rpc::future f = c_.call("estimate", name_, estimate_data);
-    return f.get<std::vector<float> >();
+    return f.get<std::vector<double> >();
   }
 
   bool clear() {

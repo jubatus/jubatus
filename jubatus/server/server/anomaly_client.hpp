@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(1.0.6-6-g2cf96c3) with jenerator version 0.9.4-42-g70f7539/master
+// This file is auto-generated from anomaly.idl(1.0.6-6-g2cf96c3) with jenerator version 0.9.4-42-g70f7539/develop
 // *** DO NOT EDIT ***
 
 #ifndef JUBATUS_SERVER_SERVER_ANOMALY_CLIENT_HPP_
@@ -37,16 +37,16 @@ class anomaly : public jubatus::client::common::client {
     return f.get<std::vector<std::string> >();
   }
 
-  float update(const std::string& id,
+  double update(const std::string& id,
       const jubatus::core::fv_converter::datum& row) {
     msgpack::rpc::future f = c_.call("update", name_, id, row);
-    return f.get<float>();
+    return f.get<double>();
   }
 
-  float overwrite(const std::string& id,
+  double overwrite(const std::string& id,
       const jubatus::core::fv_converter::datum& row) {
     msgpack::rpc::future f = c_.call("overwrite", name_, id, row);
-    return f.get<float>();
+    return f.get<double>();
   }
 
   bool clear() {
@@ -54,9 +54,9 @@ class anomaly : public jubatus::client::common::client {
     return f.get<bool>();
   }
 
-  float calc_score(const jubatus::core::fv_converter::datum& row) {
+  double calc_score(const jubatus::core::fv_converter::datum& row) {
     msgpack::rpc::future f = c_.call("calc_score", name_, row);
-    return f.get<float>();
+    return f.get<double>();
   }
 
   std::vector<std::string> get_all_rows() {

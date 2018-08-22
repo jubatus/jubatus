@@ -1,4 +1,4 @@
-// This file is auto-generated from recommender.idl(0.6.4-33-gcc8d7ca) with jenerator version 0.9.4-42-g70f7539/develop
+// This file is auto-generated from recommender.idl(1.0.5-6-g051a909) with jenerator version 0.9.4-42-g70f7539/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -42,7 +42,7 @@ class recommender_impl : public jubatus::server::common::mprpc::rpc_server {
         &recommender_impl::similar_row_from_id, this, jubatus::util::lang::_2,
         jubatus::util::lang::_3));
     rpc_server::add<std::vector<id_with_score>(std::string, std::string,
-        float)>("similar_row_from_id_and_score", jubatus::util::lang::bind(
+        double)>("similar_row_from_id_and_score", jubatus::util::lang::bind(
         &recommender_impl::similar_row_from_id_and_score, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<id_with_score>(std::string, std::string,
@@ -54,7 +54,7 @@ class recommender_impl : public jubatus::server::common::mprpc::rpc_server {
         jubatus::util::lang::bind(&recommender_impl::similar_row_from_datum,
         this, jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<std::vector<id_with_score>(std::string,
-        jubatus::core::fv_converter::datum, float)>(
+        jubatus::core::fv_converter::datum, double)>(
         "similar_row_from_datum_and_score", jubatus::util::lang::bind(
         &recommender_impl::similar_row_from_datum_and_score, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
@@ -68,11 +68,11 @@ class recommender_impl : public jubatus::server::common::mprpc::rpc_server {
         &recommender_impl::decode_row, this, jubatus::util::lang::_2));
     rpc_server::add<std::vector<std::string>(std::string)>("get_all_rows",
         jubatus::util::lang::bind(&recommender_impl::get_all_rows, this));
-    rpc_server::add<float(std::string, jubatus::core::fv_converter::datum,
+    rpc_server::add<double(std::string, jubatus::core::fv_converter::datum,
         jubatus::core::fv_converter::datum)>("calc_similarity",
         jubatus::util::lang::bind(&recommender_impl::calc_similarity, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<float(std::string, jubatus::core::fv_converter::datum)>(
+    rpc_server::add<double(std::string, jubatus::core::fv_converter::datum)>(
         "calc_l2norm", jubatus::util::lang::bind(&recommender_impl::calc_l2norm,
         this, jubatus::util::lang::_2));
 
@@ -124,7 +124,7 @@ class recommender_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   std::vector<id_with_score> similar_row_from_id_and_score(
-      const std::string& id, float score) {
+      const std::string& id, double score) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_id_and_score(id, score);
   }
@@ -142,7 +142,7 @@ class recommender_impl : public jubatus::server::common::mprpc::rpc_server {
   }
 
   std::vector<id_with_score> similar_row_from_datum_and_score(
-      const jubatus::core::fv_converter::datum& row, float score) {
+      const jubatus::core::fv_converter::datum& row, double score) {
     JRLOCK_(p_);
     return get_p()->similar_row_from_datum_and_score(row, score);
   }
@@ -163,13 +163,13 @@ class recommender_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->get_all_rows();
   }
 
-  float calc_similarity(const jubatus::core::fv_converter::datum& lhs,
+  double calc_similarity(const jubatus::core::fv_converter::datum& lhs,
       const jubatus::core::fv_converter::datum& rhs) {
     JRLOCK_(p_);
     return get_p()->calc_similarity(lhs, rhs);
   }
 
-  float calc_l2norm(const jubatus::core::fv_converter::datum& row) {
+  double calc_l2norm(const jubatus::core::fv_converter::datum& row) {
     JRLOCK_(p_);
     return get_p()->calc_l2norm(row);
   }

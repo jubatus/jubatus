@@ -1,6 +1,6 @@
-message id_with_score("std::pair<std::string, float>") {
+message id_with_score("std::pair<std::string, double>") {
   0: string id
-  1: float score
+  1: double score
 }
 
 service nearest_neighbor {

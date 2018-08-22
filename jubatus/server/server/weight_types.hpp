@@ -20,10 +20,10 @@ struct feature {
  public:
   MSGPACK_DEFINE(key, value);
   std::string key;
-  float value;
+  double value;
   feature() {
   }
-  feature(const std::string& key, float value)
+  feature(const std::string& key, double value)
     : key(key), value(value) {
   }
 };

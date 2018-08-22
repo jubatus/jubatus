@@ -43,7 +43,7 @@ TEST(image_feature, trivial) {
   std::stringstream buffer;
   buffer << ifs.rdbuf();
 
-  std::vector<std::pair<std::string, float> > ret_fv;
+  std::vector<std::pair<std::string, double> > ret_fv;
   im.add_feature("jubatus", buffer.str(), ret_fv);
   ASSERT_EQ(correct, ret_fv.size());
 }
@@ -76,7 +76,7 @@ TEST(image_feature, resize) {
   std::stringstream buffer;
   buffer << ifs.rdbuf();
 
-  std::vector<std::pair<std::string, float> > ret_fv;
+  std::vector<std::pair<std::string, double> > ret_fv;
   im.add_feature("jubatus", buffer.str(), ret_fv);
   ASSERT_EQ(correct, ret_fv.size());
 }
@@ -95,7 +95,7 @@ TEST(image_feature, ORB) {
   std::stringstream buffer;
   buffer << ifs.rdbuf();
 
-  std::vector<std::pair<std::string, float> > ret_fv;
+  std::vector<std::pair<std::string, double> > ret_fv;
   im.add_feature("jubatus", buffer.str(), ret_fv);
   ASSERT_LE(compare, ret_fv.size());
 }
