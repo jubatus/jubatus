@@ -27,20 +27,20 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
         jubatus::core::fv_converter::datum)>("set_row",
         jubatus::util::lang::bind(&nearest_neighbor_impl::set_row, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
+    rpc_server::add<std::vector<std::pair<std::string, double> >(std::string,
         std::string, uint32_t)>("neighbor_row_from_id",
         jubatus::util::lang::bind(&nearest_neighbor_impl::neighbor_row_from_id,
         this, jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
+    rpc_server::add<std::vector<std::pair<std::string, double> >(std::string,
         jubatus::core::fv_converter::datum, uint32_t)>(
         "neighbor_row_from_datum", jubatus::util::lang::bind(
         &nearest_neighbor_impl::neighbor_row_from_datum, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
+    rpc_server::add<std::vector<std::pair<std::string, double> >(std::string,
         std::string, uint32_t)>("similar_row_from_id",
         jubatus::util::lang::bind(&nearest_neighbor_impl::similar_row_from_id,
         this, jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<std::vector<std::pair<std::string, float> >(std::string,
+    rpc_server::add<std::vector<std::pair<std::string, double> >(std::string,
         jubatus::core::fv_converter::datum, uint32_t)>("similar_row_from_datum",
         jubatus::util::lang::bind(
         &nearest_neighbor_impl::similar_row_from_datum, this,
@@ -72,25 +72,25 @@ class nearest_neighbor_impl : public jubatus::server::common::mprpc::rpc_server 
     return get_p()->set_row(id, d);
   }
 
-  std::vector<std::pair<std::string, float> > neighbor_row_from_id(
+  std::vector<std::pair<std::string, double> > neighbor_row_from_id(
       const std::string& id, uint32_t size) {
     NOLOCK_(p_);
     return get_p()->neighbor_row_from_id(id, size);
   }
 
-  std::vector<std::pair<std::string, float> > neighbor_row_from_datum(
+  std::vector<std::pair<std::string, double> > neighbor_row_from_datum(
       const jubatus::core::fv_converter::datum& query, uint32_t size) {
     NOLOCK_(p_);
     return get_p()->neighbor_row_from_datum(query, size);
   }
 
-  std::vector<std::pair<std::string, float> > similar_row_from_id(
+  std::vector<std::pair<std::string, double> > similar_row_from_id(
       const std::string& id, uint32_t ret_num) {
     NOLOCK_(p_);
     return get_p()->similar_row_from_id(id, ret_num);
   }
 
-  std::vector<std::pair<std::string, float> > similar_row_from_datum(
+  std::vector<std::pair<std::string, double> > similar_row_from_datum(
       const jubatus::core::fv_converter::datum& query, uint32_t ret_num) {
     NOLOCK_(p_);
     return get_p()->similar_row_from_datum(query, ret_num);

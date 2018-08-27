@@ -135,11 +135,11 @@ int regression_serv::train(const vector<scored_datum>& data) {
   return count;
 }
 
-vector<float> regression_serv::estimate(
+vector<double> regression_serv::estimate(
     const vector<datum>& data) const {
   check_set_config();
 
-  vector<float> ret;
+  vector<double> ret;
 
   for (size_t i = 0; i < data.size(); ++i) {
     ret.push_back(regression_->estimate(data[i]));

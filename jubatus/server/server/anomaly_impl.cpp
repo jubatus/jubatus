@@ -1,4 +1,4 @@
-// This file is auto-generated from anomaly.idl(1.0.6-6-g2cf96c3) with jenerator version 0.9.4-42-g70f7539/master
+// This file is auto-generated from anomaly.idl(1.0.6-6-g2cf96c3) with jenerator version 0.9.4-42-g70f7539/develop
 // *** DO NOT EDIT ***
 
 #include <map>
@@ -29,17 +29,17 @@ class anomaly_impl : public jubatus::server::common::mprpc::rpc_server {
         std::vector<jubatus::core::fv_converter::datum>)>("add_bulk",
         jubatus::util::lang::bind(&anomaly_impl::add_bulk, this,
         jubatus::util::lang::_2));
-    rpc_server::add<float(std::string, std::string,
+    rpc_server::add<double(std::string, std::string,
         jubatus::core::fv_converter::datum)>("update",
         jubatus::util::lang::bind(&anomaly_impl::update, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
-    rpc_server::add<float(std::string, std::string,
+    rpc_server::add<double(std::string, std::string,
         jubatus::core::fv_converter::datum)>("overwrite",
         jubatus::util::lang::bind(&anomaly_impl::overwrite, this,
         jubatus::util::lang::_2, jubatus::util::lang::_3));
     rpc_server::add<bool(std::string)>("clear", jubatus::util::lang::bind(
         &anomaly_impl::clear, this));
-    rpc_server::add<float(std::string, jubatus::core::fv_converter::datum)>(
+    rpc_server::add<double(std::string, jubatus::core::fv_converter::datum)>(
         "calc_score", jubatus::util::lang::bind(&anomaly_impl::calc_score, this,
         jubatus::util::lang::_2));
     rpc_server::add<std::vector<std::string>(std::string)>("get_all_rows",
@@ -74,13 +74,13 @@ class anomaly_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->add_bulk(data);
   }
 
-  float update(const std::string& id,
+  double update(const std::string& id,
       const jubatus::core::fv_converter::datum& row) {
     JWLOCK_(p_);
     return get_p()->update(id, row);
   }
 
-  float overwrite(const std::string& id,
+  double overwrite(const std::string& id,
       const jubatus::core::fv_converter::datum& row) {
     JWLOCK_(p_);
     return get_p()->overwrite(id, row);
@@ -91,7 +91,7 @@ class anomaly_impl : public jubatus::server::common::mprpc::rpc_server {
     return get_p()->clear();
   }
 
-  float calc_score(const jubatus::core::fv_converter::datum& row) {
+  double calc_score(const jubatus::core::fv_converter::datum& row) {
     JRLOCK_(p_);
     return get_p()->calc_score(row);
   }

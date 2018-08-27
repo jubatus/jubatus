@@ -19,7 +19,7 @@ int run_proxy(int argc, char* argv[]) {
     jubatus::server::framework::proxy k(
         jubatus::server::framework::proxy_argv(argc, argv, "regression"));
     k.register_async_random<int32_t, std::vector<scored_datum> >("train");
-    k.register_async_random<std::vector<float>,
+    k.register_async_random<std::vector<double>,
         std::vector<jubatus::core::fv_converter::datum> >("estimate");
     k.register_async_broadcast<bool>("clear",
         jubatus::util::lang::function<bool(bool, bool)>(

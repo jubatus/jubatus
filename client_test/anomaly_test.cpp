@@ -76,7 +76,7 @@ TEST(anomaly_test, update) {
   anomaly cli(host(), port(), cluster_name(), timeout());
   datum d;
   id_with_score id = cli.add(d);
-  float score = cli.update(id.id, d);
+  double score = cli.update(id.id, d);
 }
 
 TEST(anomaly_test, overwrite) {
@@ -84,7 +84,7 @@ TEST(anomaly_test, overwrite) {
   datum d;
   id_with_score id = cli.add(d);
   try {
-    float score = cli.overwrite(id.id, d);
+    double score = cli.overwrite(id.id, d);
   } catch (...) {
     // some algorithm doesn't support this method
   }
@@ -94,7 +94,7 @@ TEST(anomaly_test, calc_score) {
   anomaly cli(host(), port(), cluster_name(), timeout());
   datum d;
   id_with_score id = cli.add(d);
-  float score = cli.calc_score(d);
+  double score = cli.calc_score(d);
 }
 
 TEST(anomaly_test, get_all_rows) {

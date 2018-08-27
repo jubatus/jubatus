@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 message scored_datum {
-  0: float score
+  0: double score
   1: datum data
 }
 
@@ -25,7 +25,7 @@ service regression {
   int train(0: list<scored_datum> train_data)
 
   #@random #@analysis #@pass
-  list<float>  estimate(0: list<datum>  estimate_data)
+  list<double>  estimate(0: list<datum>  estimate_data)
 
   #@broadcast #@update #@all_and
   bool clear()

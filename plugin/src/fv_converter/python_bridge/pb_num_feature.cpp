@@ -33,7 +33,7 @@ namespace python {
 void pb_num_feature::add_feature(
     const std::string& key,
     double value,
-    std::vector<std::pair<std::string, float> >& ret_fv) const {
+    std::vector<std::pair<std::string, double> >& ret_fv) const {
   scoped_gil lk;
 
   pb_object pkey(pb_unicode_from_string(key));

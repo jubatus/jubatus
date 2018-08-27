@@ -20,11 +20,11 @@ namespace regression {
 struct scored_datum {
  public:
   MSGPACK_DEFINE(score, data);
-  float score;
+  double score;
   jubatus::client::common::datum data;
   scored_datum() {
   }
-  scored_datum(float score, const jubatus::client::common::datum& data)
+  scored_datum(double score, const jubatus::client::common::datum& data)
     : score(score), data(data) {
   }
 };
