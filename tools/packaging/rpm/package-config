@@ -1,7 +1,7 @@
 # ==============================================================================
 # Jubatus
 # ==============================================================================
-JUBATUS_VERSION="1.0.9"
+JUBATUS_VERSION="1.1.0"
 JUBATUS_RELEASE="1"
 JUBATUS_IS_SNAPSHOT="no"
 JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
@@ -9,7 +9,7 @@ JUBATUS_CHECKOUT="${JUBATUS_VERSION}"
 # ==============================================================================
 # Jubatus Core
 # ==============================================================================
-JUBATUS_CORE_VERSION="1.0.9"
+JUBATUS_CORE_VERSION="1.1.0"
 JUBATUS_CORE_RELEASE="1"
 JUBATUS_CORE_IS_SNAPSHOT="no"
 JUBATUS_CORE_CHECKOUT="${JUBATUS_CORE_VERSION}"
@@ -17,7 +17,7 @@ JUBATUS_CORE_CHECKOUT="${JUBATUS_CORE_VERSION}"
 # ==============================================================================
 # jubadump
 # ==============================================================================
-JUBADUMP_VERSION="1.0.2"
+JUBADUMP_VERSION="1.1.0"
 JUBADUMP_RELEASE="1"
 JUBADUMP_IS_SNAPSHOT="no"
 JUBADUMP_CHECKOUT="${JUBADUMP_VERSION}"
@@ -81,7 +81,7 @@ MECAB_IPADIC_URL="https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7MW
 # ==============================================================================
 # ZooKeeper
 # ==============================================================================
-ZOOKEEPER_VERSION="3.4.11"
+ZOOKEEPER_VERSION="3.4.12"
 ZOOKEEPER_RELEASE="1"
 
 # ==============================================================================
