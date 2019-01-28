@@ -1,14 +1,20 @@
+Release 1.1.1 - 2019/01/28
+--------------------------
+
+* Improvements
+    * Upgrade to jubatus_core 1.1.1
+
 Release 1.1.0 - 2018/08/27
 --------------------------
 
 * Changes to Supported Systems
     * Ubuntu 18.04 LTS is now officially supported (#1230, #1231, #1236)
 
-    * Improvements
-        * Use double instead of float (#1232)
+* Improvements
+    * Use double instead of float (#1232)
             
-            * Bug fixes
-                * Fix the all-in-packaging tool to work on RHEL (#1235)
+* Bug fixes
+    * Fix the all-in-packaging tool to work on RHEL (#1235)
 
 Release 1.0.9 - 2018/04/23
 --------------------------
